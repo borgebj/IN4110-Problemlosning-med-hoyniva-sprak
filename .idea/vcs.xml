@@ -5,5 +5,8 @@
     <mapping directory="$PROJECT_DIR$/oblig1/IN3110-borgebj" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/oblig1/forks/IN3110-borgebj" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/oblig1/my-repo-copy" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/obliger/IN3110-borgebj" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/obliger/forks/IN3110-borgebj" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/obliger/my-repo-copy" vcs="Git" />
   </component>
 </project>
