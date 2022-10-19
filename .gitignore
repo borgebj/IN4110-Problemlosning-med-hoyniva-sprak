@@ -1,2 +1,6 @@
 
-obliger/IN3110-borgebj
+__pycache__
+.pytest_cache
+.idea
+venv
+venvbackup
