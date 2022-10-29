@@ -1,0 +1,67 @@
+*Readme*
+- Documentation in readme is good and works well.
+- Only changed line to fit change in cli
+
+
+*cli.py*
+- Fine docstring
+- When resizing, it is always resized to half size and not uses the scale-parameter.
+- Most likely intentional (?) but changed so parameter is used
+> Changed so that user can rescale image to given size (+ readme accordingly)
+
+- The variable "filter = None" is uneccessary, since it is defined beneth
+> Removed "filter = None"
+
+- if dict_args["sepia"] != None is correct, but since no equality is checked, "is not" is used instead.
+> Changed "!= None" to "is not None"
+
+> changed formatting of lines to improve readabilty
+
+
+*python_filters.py*
+- Setting type back to uint8 can be done on same line as returning
+> Changed so type-casting while returning
+
+> added whitespace when indexing to improve readability
+
+- When checking if any values are above 255, the only thing being checked is a *number* in the range of sepia_image[i, j] and not the actual value
+> Changed "if k > 255" to "if sepia_image[i, j, k] > 255"
+
+
+*numpy_filters.py:*
+> Changed so type-casting while returning
+> Added whitespace between indexing for readability
+> indexing changed from [:, :, 1] to [..., 1] and [:, :, :] to [:] as simplified syntax easier to read
+
+- Sepia_image is defined further down, so first sepia_image variable is uneccessary
+> removed first "sepia_image" variable
+
+> shortened long comment
+
+> removed unused import
+
+- Einsteim summation is correct and follows tips in assignment, however, using numpy's matrix multiplication is both much easier and faster.
+For this to work the matrix also has to be transposed using "sepia_matrix.T"
+The "@" is a short- simplified version of "np.matmul(image, sepia_matrix.T)"
+
+previous time:    0.0342s  	(160x)
+new time: 	   0.00783s 	(708x)
+
+
+*numba_filters.py*
+- Works as intended. Since code is same as python_filters, did same changes here.
+
+
+*timing.py*
+- Timing very nicely done
+- Only "de-cluttered" a bit by adding newline before comments
+
+
+*test_python/numpy/numba.py*
+- Good and thorough tests
+- Only changes are minor changes to comments and indexing (whitespaces)
+
+
+Summary:
+* Everything works as it should and coding is very well done.
+* Only minor formatting changes done, apart from in numpy_filter where einsum is swapped with numpy's matmul

@@ -1,6 +1,19 @@
 
-__pycache__
+__MACOSX
+../__MACOSX/
+__MACOSX/
+images
 .pytest_cache
+instapy.egg-info
+__pycache__
+build
+timing-report.txt
+cython_filters.cp38-win_amd64.pyd
+cython_filters.cp310-win_amd64.pyd
+cython_filters.c
+instapy/cython_filters.html
+cython_filters.html
+*.html
+assignment3/instapy/test
+test
 .idea
-venv
-venvbackup
