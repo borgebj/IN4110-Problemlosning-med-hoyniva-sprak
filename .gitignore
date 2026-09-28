@@ -17,3 +17,10 @@ cython_filters.html
 assignment3/instapy/test
 test
 .idea
+venv
+../.idea
+cache.*
+*.sqlite
+NBA_Player_statistics
+*.png
+*.jpg

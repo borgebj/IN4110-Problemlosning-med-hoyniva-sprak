@@ -1,5 +1,5 @@
-import os
 import re
+import os
 from operator import itemgetter
 from typing import Dict, List
 from urllib.parse import urljoin
@@ -10,15 +10,6 @@ from requesting_urls import get_html
 from filter_urls import finish_url
 import pandas as pd
 
-## --- Task 8, 9 and 10 --- ##
-
-try:
-    import requests_cache
-except ImportError:
-    print("install requests_cache to improve performance")
-    pass
-else:
-    requests_cache.install_cache()
 
 base_url = "https://en.wikipedia.org"
 
@@ -200,11 +191,11 @@ def plot_best(best: Dict[str, List[Dict]], stat: str = "points") -> None:
                fontsize=4,
                title_fontsize=5)
 
-    # create new folder [stats_dir] and saves image under
+    stats_dir = "NBA_Player_statistics"
+    os.makedirs(stats_dir, exist_ok=True)
     filename = stat+".png"
     print(f"Creating {filename}")
-    #TODO: fungerer ikke med pytesten for en eller annen grunn??
-    plt.savefig("NBA_player_statistics/"+filename, dpi=300)
+    plt.savefig(f"{stats_dir}/{filename}", dpi=300)
 
 
 def get_teams(url: str) -> list:
@@ -227,8 +218,7 @@ def get_teams(url: str) -> list:
     # maybe useful: identify cells that look like 'E1' or 'W5', etc.
     seed_pattern = re.compile(r"^[EW][1-8]$")
 
-    # lots of ways to do this,
-    # but one way is to build a set of team names in the semifinal
+    # builds a set of team names in the semifinal
     # and a dict of {team name: team url}
 
     team_links = {}  # dict of team name: team url

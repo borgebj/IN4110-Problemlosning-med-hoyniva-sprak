@@ -1,9 +1,13 @@
 from typing import Dict, Optional
 import time
 import requests
+import requests_cache
 
 # html cache
-cache = {}
+requests_cache.install_cache(
+    "cache",
+    expire_after=3600
+)
 
 def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = None) -> str:
     """Gets an HTML page and return its contents.
@@ -15,9 +19,6 @@ def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = No
     Returns:
         html (str) : The HTML of the page, as text.
     """
-
-    if url in cache:
-        return cache[url]
 
     headers = {
         "User-Agent": "BorgeWebScraper/1.0 (educational project)"
@@ -56,5 +57,4 @@ def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = No
             file.write(url+"\n")
             file.write(html_str)
 
-    cache[url] = response.text
     return html_str
