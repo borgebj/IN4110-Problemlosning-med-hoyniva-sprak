@@ -1,24 +1,26 @@
-from typing import List  # isort:skip
-
-from requesting_urls import get_html
-from filter_urls import find_articles
-import time
-
 from collections import deque
-from typing import Callable
+import time
+from typing import Callable, List
+
+from filter_urls import find_articles
+from requesting_urls import get_html
 
 
-def average_time(function: Callable, *args, calls: int = 1) -> (List[str], float):
+def average_time(
+    function: Callable,
+    *args,
+    calls: int = 1
+) -> tuple[List[str], float]:
     times = []
     paths = []
 
-    for i in range(calls):
+    for _ in range(calls):
         t0 = time.perf_counter()
         paths.append(function(*args))
         t1 = time.perf_counter()
         times.append(t1-t0)
 
-    return min(paths, key=len), sum(times) / len(times)
+    return paths[0], sum(times) / len(times)
 
 
 def countdown(sec):
@@ -41,26 +43,35 @@ def BFS_shortest_path(start: str, goal: str) -> List[str]:
     Returns:
         new_path (list) : a list containing the path from start to goal in URL-form
     """
-    # visited = [[start]]
-    queue = [[start]]
-
-    visited = [[start]]
-    # queue = deque([start])
+    queue = deque([start])
+    visited = {start}
+    parent = {start: None}
 
     while queue:
-        path = queue.pop(0)
-        node = path[-1]
+        node = queue.popleft()
 
-        if node not in visited:
-            for article in find_articles(get_html(node), all_lan=False):
-                new_path = list(path)
-                new_path.append(article)
-                queue.append(new_path)
+        # goes through all wikipedia articles from this page
+        for article in find_articles(get_html(node), all_lan=False):
+            if article in visited:
+                continue
 
-                if article == goal:
-                    return new_path
+            # mark article as vied, save parent / where it came from
+            visited.add(article)
+            parent[article] = node
 
-            visited.append(node)
+            if article == goal:
+                path = []
+                current = goal
+
+                # reconstruct path following parent backwards
+                while current is not None:
+                    path.append(current)
+                    current = parent[current]
+
+                return path[::-1]
+
+            queue.append(article)
+
     return []
 
 
@@ -68,7 +79,7 @@ def find_path(start: str, finish: str, calls: int) -> List[str]:
     """Find the shortest path from `start` to `finish`
 
     Uses Breadth-first search algorithm to search through all articles of each url,
-    to then first the shortest path to the end-article
+    to then first to shorten the path to the end-article
 
     Arguments:
       start (str): wikipedia article URL to start from
@@ -82,9 +93,7 @@ def find_path(start: str, finish: str, calls: int) -> List[str]:
         All items of the list should be URLs for wikipedia articles.
         Each article should have a direct link to the next article in the list.
     """
-    # race countdown + info
-    print("Warning : A sound will play when path is found!")
-    time.sleep(3)
+
     print("\nStarting wiki-race in ...")
     countdown(3)
     print("\n\n- Search has begun -")
@@ -93,19 +102,20 @@ def find_path(start: str, finish: str, calls: int) -> List[str]:
     t0 = time.perf_counter()
     time_start = time.strftime("%H:%M:%S", time.localtime())
 
-    path, avg = average_time(BFS_shortest_path, start, finish, calls=calls)
+    path, avg = average_time(
+        BFS_shortest_path,
+        start,
+        finish,
+        calls=calls)
 
     time_end = time.strftime("%H:%M:%S", time.localtime())
     t1 = time.perf_counter()
     # ends timing
 
-    # can take time, so makes a sound when finished
-    import winsound
-    winsound.Beep(1000, 500)
-
     # inform of output
     print("\n"+("-"*100))
-    print(f'Shortest path: {path}')
+    print("Shortest path:")
+    [print(f" -> {article}") for article in path]
     print(f'Total time: {t1-t0:.2f}s on {calls} runs with {avg:.2f}s average')
     print(f'Time at start: {time_start}')
     print(f'Time at end: {time_end}')
@@ -113,6 +123,7 @@ def find_path(start: str, finish: str, calls: int) -> List[str]:
 
     assert path[0] == start
     assert path[-1] == finish
+
     return path
 
 
@@ -131,30 +142,3 @@ if __name__ == "__main__":
     calls = 1
 
     find_path(start, finish, calls)
-
-    # note: time can vary, since urls can contain lots of links + articles is a set
-    # 2 samples from example links above:
-
-    # pc 1 average 393s
-    # 340, 746, 731, 344, 600, 112, 556, 155, 143, 446, 132, 412
-    # fastest: 112s
-
-    # pc 2 average: 453s
-    # 556, 603, 139, 710, 282, 599, 177, 544, 380, 403, 702, 344
-    # fastest: 139s
-
-    # tests done on random links:
-
-    # start = "https://en.wikipedia.org/wiki/Paul_Grof"
-    # finish = "https://en.wikipedia.org/wiki/Kopust"
-    # time taken: 3270s / 54m
-    # path length: 5 links
-    # paul_grof -> main_page -> druidry_(modern) -> hassidic -> kopust
-
-    # start = "https://en.wikipedia.org/wiki/Pentacora"
-    # finish = "https://en.wikipedia.org/wiki/Adolf_Hitler"
-    # time taken: 18s
-    # path length: 4 links
-    # pentacora -> isbn_(identifier) -> book_burning -> adolf_hitler
-
-    # 6.39, 10.44, 5.66, 16.33, 49.85, 9.04, 58.20, 28.25, 32.86, 5.87

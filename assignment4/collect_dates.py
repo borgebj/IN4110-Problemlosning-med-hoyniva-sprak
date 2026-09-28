@@ -96,7 +96,7 @@ def convert_month(s: str) -> str:
         return zero_pad((str(index + 1)))
 
 
-def zero_pad(n: str):
+def zero_pad(n: str) -> str:
     """zero-pad a number string
 
     turns '2' into '02'

@@ -1,11 +1,11 @@
 from typing import Dict, Optional
-
+import time
 import requests
 
-## -- Task 1 -- ##
+# html cache
+cache = {}
 
-
-def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = None):
+def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = None) -> str:
     """Gets an HTML page and return its contents.
 
     Arguments:
@@ -15,8 +15,37 @@ def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = No
     Returns:
         html (str) : The HTML of the page, as text.
     """
+
+    if url in cache:
+        return cache[url]
+
+    headers = {
+        "User-Agent": "BorgeWebScraper/1.0 (educational project)"
+    }
+
     # passing the optional parameters argument to the get function
-    response = requests.get(url, params=params)
+    response = requests.get(
+        url,
+        params=params,
+        headers=headers,
+        timeout=10
+    )
+
+    if response.status_code == 429:
+        retry_after = response.headers.get("Retry-After")
+        wait_time = int(retry_after) if retry_after else 5
+
+        print(f"Rate limited. Waiting {wait_time} seconds...")
+        time.sleep(wait_time)
+
+        response = requests.get(
+            url,
+            params=params,
+            headers=headers,
+            timeout=10
+        )
+
+    response.raise_for_status()
 
     html_str = response.text
 
@@ -27,4 +56,5 @@ def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = No
             file.write(url+"\n")
             file.write(html_str)
 
+    cache[url] = response.text
     return html_str

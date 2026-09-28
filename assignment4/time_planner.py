@@ -29,13 +29,14 @@ def time_plan(url: str) -> str:
     return:
         markdown (str) : string containing the markdown schedule
     """
-    # Gets the page
+    # Gets the page, parse html
     html = get_html(url)
-    # parses the HTML
     soup = BeautifulSoup(html, "html.parser")
+
     # locates the table
     calendar = soup.find(id="Calendar")
     soup_table = calendar.find_next("table", {"class": "wikitable"})
+
     # extracts events into pandas data frame
     df = extract_events(soup_table)
 
@@ -100,6 +101,7 @@ def extract_events(table: bs4.element.Tag) -> pd.DataFrame:
 
     # List of desired columns - can add more
     wanted = ["Date", "Venue", "Type"]
+    wanted = [key for key in wanted if key in labels]
 
     # Filters data into a dictionary of desired columns and their values
     filtered_data = filter_data(labels, all_data, wanted)
@@ -141,10 +143,7 @@ def strip_text(text: str) -> str:
     Returns:
         text (str) : the string fixed
     """
-
-    text = text[:20]  # 20 char limit
-    text = re.sub(r"\[.*\]", "", text)
-    return text
+    return re.sub(r"\[[^\]]*\]", "", text).strip()
 
 
 def filter_data(keys: list, data: list, wanted: list):
