@@ -23,4 +23,4 @@ cache.*
 *.sqlite
 NBA_Player_statistics
 *.png
-*.jpg
+*.jpg*.sqlite
